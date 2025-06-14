@@ -174,8 +174,75 @@ function calculateNextTime(currentTime, repeatType, interval) {
         case 'weeks':
             nextTime.setDate(nextTime.getDate() + (interval * 7));
             break;
+        case 'scheduled':
+            // interval은 JSON 문자열로 저장된 스케줄 정보
+            const schedule = JSON.parse(interval);
+            return calculateNextScheduledTime(schedule);
         default:
             throw new Error(`알 수 없는 반복 타입: ${repeatType}`);
+    }
+    
+    return nextTime;
+}
+
+// 스케줄 기반 다음 실행 시간 계산
+function calculateNextScheduledTime(schedule) {
+    const now = new Date();
+    const nextTime = new Date();
+    
+    switch (schedule.type) {
+        case 'daily':
+            nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
+            nextTime.setDate(nextTime.getDate() + 1); // 다음 날로 설정
+            break;
+            
+        case 'weekly':
+            const currentDay = now.getDay();
+            const targetDay = schedule.dayOfWeek;
+            let daysUntilTarget = targetDay - currentDay;
+            
+            if (daysUntilTarget <= 0) {
+                daysUntilTarget += 7;
+            }
+            
+            nextTime.setDate(now.getDate() + daysUntilTarget);
+            nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
+            break;
+            
+        case 'monthly':
+            nextTime.setMonth(nextTime.getMonth() + 1);
+            nextTime.setDate(schedule.date);
+            nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
+            
+            // 다음 달에 해당 날짜가 없는 경우 마지막 날로 설정
+            const lastDayOfMonth = new Date(nextTime.getFullYear(), nextTime.getMonth() + 1, 0).getDate();
+            if (schedule.date > lastDayOfMonth) {
+                nextTime.setDate(lastDayOfMonth);
+            }
+            break;
+            
+        case 'weekdays':
+            nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
+            nextTime.setDate(nextTime.getDate() + 1);
+            
+            // 다음 평일까지 이동
+            while (nextTime.getDay() === 0 || nextTime.getDay() === 6) {
+                nextTime.setDate(nextTime.getDate() + 1);
+            }
+            break;
+            
+        case 'weekends':
+            nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
+            nextTime.setDate(nextTime.getDate() + 1);
+            
+            // 다음 주말까지 이동
+            while (nextTime.getDay() !== 0 && nextTime.getDay() !== 6) {
+                nextTime.setDate(nextTime.getDate() + 1);
+            }
+            break;
+            
+        default:
+            return null;
     }
     
     return nextTime;

@@ -74,6 +74,47 @@ function formatRepeatInfo(repeatType, interval) {
         case 'hours': return `${interval}시간마다`;
         case 'days': return `${interval}일마다`;
         case 'weeks': return `${interval}주마다`;
+        case 'scheduled': 
+            try {
+                const schedule = JSON.parse(interval);
+                return formatScheduleInfo(schedule);
+            } catch (error) {
+                return '스케줄 오류';
+            }
         default: return '알 수 없음';
+    }
+}
+
+// 스케줄 정보 포맷 함수
+function formatScheduleInfo(schedule) {
+    switch (schedule.type) {
+        case 'daily':
+            const dailyPeriod = schedule.hour >= 12 ? '오후' : '오전';
+            const dailyHour = schedule.hour > 12 ? schedule.hour - 12 : (schedule.hour === 0 ? 12 : schedule.hour);
+            return `매일 ${dailyPeriod} ${dailyHour}시`;
+            
+        case 'weekly':
+            const weeklyPeriod = schedule.hour >= 12 ? '오후' : '오전';
+            const weeklyHour = schedule.hour > 12 ? schedule.hour - 12 : (schedule.hour === 0 ? 12 : schedule.hour);
+            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+            return `매주 ${days[schedule.dayOfWeek]} ${weeklyPeriod} ${weeklyHour}시`;
+            
+        case 'monthly':
+            const monthlyPeriod = schedule.hour >= 12 ? '오후' : '오전';
+            const monthlyHour = schedule.hour > 12 ? schedule.hour - 12 : (schedule.hour === 0 ? 12 : schedule.hour);
+            return `매월 ${schedule.date}일 ${monthlyPeriod} ${monthlyHour}시`;
+            
+        case 'weekdays':
+            const weekdaysPeriod = schedule.hour >= 12 ? '오후' : '오전';
+            const weekdaysHour = schedule.hour > 12 ? schedule.hour - 12 : (schedule.hour === 0 ? 12 : schedule.hour);
+            return `평일 ${weekdaysPeriod} ${weekdaysHour}시`;
+            
+        case 'weekends':
+            const weekendsPeriod = schedule.hour >= 12 ? '오후' : '오전';
+            const weekendsHour = schedule.hour > 12 ? schedule.hour - 12 : (schedule.hour === 0 ? 12 : schedule.hour);
+            return `주말 ${weekendsPeriod} ${weekendsHour}시`;
+            
+        default:
+            return '알 수 없는 스케줄';
     }
 }
