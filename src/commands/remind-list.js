@@ -15,7 +15,7 @@ module.exports = {
             if (reminders.length === 0) {
                 return await interaction.reply({
                     content: '📝 설정된 리마인더가 없습니다.',
-                    ephemeral: true
+                    flags: 64
                 });
             }
             
@@ -46,14 +46,14 @@ module.exports = {
             
             await interaction.reply({
                 embeds: [embed],
-                ephemeral: true
+                flags: 64
             });
             
         } catch (error) {
             console.error('리마인더 목록 조회 오류:', error);
             await interaction.reply({
                 content: '❌ 리마인더 목록을 조회하는 중 오류가 발생했습니다.',
-                ephemeral: true
+                flags: 64
             });
         }
     },

@@ -7,9 +7,8 @@ module.exports = {
     
     async execute(interaction) {
         const sent = await interaction.reply({ 
-            content: 'Pong! 🏓', 
-            fetchReply: true 
-        });
+            content: 'Pong! 🏓'
+        }).then(() => interaction.fetchReply());
         
         const timeDiff = sent.createdTimestamp - interaction.createdTimestamp;
         

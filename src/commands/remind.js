@@ -42,14 +42,14 @@ module.exports = {
             const formattedTime = formatTime(parsedTime);
             await interaction.reply({
                 content: `⏰ **${formattedTime}**에 "${message}" 알림이 설정되었습니다!`,
-                ephemeral: true
+                flags: 64
             });
             
         } catch (error) {
             console.error('리마인더 설정 오류:', error);
             await interaction.reply({
                 content: '❌ 리마인더 설정 중 오류가 발생했습니다. 다시 시도해주세요.',
-                ephemeral: true
+                flags: 64
             });
         }
     },
