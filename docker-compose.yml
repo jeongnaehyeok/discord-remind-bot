@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  discord-bot:
+    build: .
+    container_name: discord-reminder-bot
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - DATABASE_PATH=/app/data/reminders.db
+    volumes:
+      - ./data:/app/data
+    # 헬스체크 (선택사항)
+    healthcheck:
+      test: ["CMD", "ps", "aux", "|", "grep", "node"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
