@@ -40,9 +40,15 @@ async function sendReminder(reminder) {
         const user = await client.users.fetch(reminder.user_id);
         
         if (!channel) {
-            console.error(`채널을 찾을 수 없습니다: ${reminder.channel_id}`);
+            console.error(`채널/스레드를 찾을 수 없습니다: ${reminder.channel_id}`);
             return;
         }
+        
+        // 스레드인지 확인하고 적절히 처리
+        const isThread = channel.isThread && channel.isThread();
+        const channelType = isThread ? '스레드' : '채널';
+        
+        console.log(`${channelType}에 리마인더 전송: ${channel.name || 'Unknown'}`);
         
         const embed = {
             color: 0x0099FF,
