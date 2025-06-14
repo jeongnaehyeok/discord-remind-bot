@@ -29,9 +29,17 @@ module.exports = {
                 const remindTime = new Date(reminder.remind_time);
                 const formattedTime = formatTime(remindTime);
                 
+                let value = `⏰ ${formattedTime}\n🆔 ID: ${reminder.id}`;
+                
+                // 반복 리마인더인지 확인
+                if (reminder.repeat_type && reminder.repeat_interval) {
+                    const repeatText = formatRepeatInfo(reminder.repeat_type, reminder.repeat_interval);
+                    value += `\n🔄 반복: ${repeatText}`;
+                }
+                
                 return {
                     name: `${index + 1}. ${reminder.message}`,
-                    value: `⏰ ${formattedTime}\n🆔 ID: ${reminder.id}`,
+                    value: value,
                     inline: false
                 };
             });
@@ -58,3 +66,14 @@ module.exports = {
         }
     },
 };
+
+// 반복 정보 포맷 함수
+function formatRepeatInfo(repeatType, interval) {
+    switch (repeatType) {
+        case 'minutes': return `${interval}분마다`;
+        case 'hours': return `${interval}시간마다`;
+        case 'days': return `${interval}일마다`;
+        case 'weeks': return `${interval}주마다`;
+        default: return '알 수 없음';
+    }
+}

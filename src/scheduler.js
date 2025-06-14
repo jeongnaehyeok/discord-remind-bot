@@ -26,7 +26,13 @@ async function checkReminders() {
         
         for (const reminder of reminders) {
             await sendReminder(reminder);
-            await db.markReminderCompleted(reminder.id);
+            
+            // 반복 리마인더인지 확인
+            if (reminder.repeat_type && reminder.repeat_interval) {
+                await scheduleNextRepeat(reminder);
+            } else {
+                await db.markReminderCompleted(reminder.id);
+            }
         }
         
     } catch (error) {
@@ -106,6 +112,51 @@ async function deleteReminderById(reminderId, userId) {
         console.error('리마인더 삭제 실패:', error);
         return false;
     }
+}
+
+// 다음 반복 일정 설정
+async function scheduleNextRepeat(reminder) {
+    try {
+        const currentTime = new Date(reminder.remind_time);
+        const nextTime = calculateNextTime(currentTime, reminder.repeat_type, reminder.repeat_interval);
+        
+        // 다음 실행 시간으로 업데이트
+        const sql = `UPDATE reminders SET remind_time = ? WHERE id = ?`;
+        db.db.run(sql, [nextTime.toISOString(), reminder.id], (err) => {
+            if (err) {
+                console.error('반복 리마인더 업데이트 실패:', err.message);
+            } else {
+                console.log(`반복 리마인더 다음 실행 시간 설정: ${nextTime.toISOString()}`);
+            }
+        });
+        
+    } catch (error) {
+        console.error('반복 리마인더 스케줄링 오류:', error);
+    }
+}
+
+// 다음 실행 시간 계산
+function calculateNextTime(currentTime, repeatType, interval) {
+    const nextTime = new Date(currentTime);
+    
+    switch (repeatType) {
+        case 'minutes':
+            nextTime.setMinutes(nextTime.getMinutes() + interval);
+            break;
+        case 'hours':
+            nextTime.setHours(nextTime.getHours() + interval);
+            break;
+        case 'days':
+            nextTime.setDate(nextTime.getDate() + interval);
+            break;
+        case 'weeks':
+            nextTime.setDate(nextTime.getDate() + (interval * 7));
+            break;
+        default:
+            throw new Error(`알 수 없는 반복 타입: ${repeatType}`);
+    }
+    
+    return nextTime;
 }
 
 module.exports = {

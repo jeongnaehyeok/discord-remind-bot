@@ -32,6 +32,8 @@ class Database {
                     channel_id TEXT NOT NULL,
                     message TEXT NOT NULL,
                     remind_time DATETIME NOT NULL,
+                    repeat_type TEXT DEFAULT NULL,
+                    repeat_interval INTEGER DEFAULT NULL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             `;
