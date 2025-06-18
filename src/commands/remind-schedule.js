@@ -165,7 +165,7 @@ function parseSchedule(scheduleString) {
 // 다음 실행 시간 계산
 function calculateNextScheduledTime(schedule) {
     const now = new Date();
-    const nextTime = new Date();
+    const nextTime = new Date(now);
     
     switch (schedule.type) {
         case 'daily':
@@ -184,8 +184,9 @@ function calculateNextScheduledTime(schedule) {
                 daysUntilTarget += 7;
             } else if (daysUntilTarget === 0) {
                 // 같은 요일인 경우 시간 확인
-                nextTime.setHours(schedule.hour, schedule.minute, 0, 0);
-                if (nextTime <= now) {
+                const tempTime = new Date(now);
+                tempTime.setHours(schedule.hour, schedule.minute, 0, 0);
+                if (tempTime <= now) {
                     daysUntilTarget = 7;
                 }
             }
