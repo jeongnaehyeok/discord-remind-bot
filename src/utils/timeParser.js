@@ -27,7 +27,13 @@ function parseTime(timeString) {
             return null; // 잘못된 시간 형식
         }
         
-        targetTime.setHours(hour, minute, 0, 0);
+        // 명시적으로 한국 시간대에서 시간 설정
+        const year = targetTime.getFullYear();
+        const month = targetTime.getMonth();
+        const date = targetTime.getDate();
+        
+        // 로컬 시간대로 명시적으로 Date 생성
+        targetTime = new Date(year, month, date, hour, minute, 0, 0);
         
         // 날짜 키워드 처리
         if (tomorrowMatch) {
@@ -149,14 +155,12 @@ function isValidTime(parsedTime) {
 }
 
 function formatTime(date) {
-    // UTC 시간을 한국 시간(UTC+9)으로 변환
-    const koreaTime = new Date(date.getTime() + (9 * 60 * 60 * 1000));
-    
-    const year = koreaTime.getUTCFullYear();
-    const month = koreaTime.getUTCMonth() + 1;
-    const day = koreaTime.getUTCDate();
-    const hour = koreaTime.getUTCHours();
-    const minute = koreaTime.getUTCMinutes();
+    // Date 객체가 이미 로컬 시간대로 생성되었으므로 직접 사용
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
     
     // 월 이름 배열
     const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
