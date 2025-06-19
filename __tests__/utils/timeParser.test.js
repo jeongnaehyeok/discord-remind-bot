@@ -88,6 +88,40 @@ describe('timeParser', () => {
             });
         });
         
+        describe('시간과 분 조합 파싱', () => {
+            test('오늘 2시 50분', () => {
+                const result = parseTime('오늘 2시 50분');
+                expect(result).toBeInstanceOf(Date);
+                expect(result.getHours()).toBe(2);
+                expect(result.getMinutes()).toBe(50);
+                expect(result.getDate()).toBe(17); // 과거 시간이므로 내일로 설정
+            });
+            
+            test('내일 14시 30분', () => {
+                const result = parseTime('내일 14시 30분');
+                expect(result).toBeInstanceOf(Date);
+                expect(result.getDate()).toBe(17);
+                expect(result.getHours()).toBe(14);
+                expect(result.getMinutes()).toBe(30);
+            });
+            
+            test('23시 59분 (미래)', () => {
+                const result = parseTime('23시 59분');
+                expect(result).toBeInstanceOf(Date);
+                expect(result.getDate()).toBe(16); // 오늘
+                expect(result.getHours()).toBe(23);
+                expect(result.getMinutes()).toBe(59);
+            });
+            
+            test('2시 50분 (단독)', () => {
+                const result = parseTime('2시 50분');
+                expect(result).toBeInstanceOf(Date);
+                expect(result.getHours()).toBe(2);
+                expect(result.getMinutes()).toBe(50);
+                expect(result.getDate()).toBe(17); // 과거 시간이므로 내일로 설정
+            });
+        });
+        
         describe('잘못된 입력', () => {
             test('빈 문자열', () => {
                 const result = parseTime('');
