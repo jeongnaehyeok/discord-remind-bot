@@ -30,12 +30,16 @@ module.exports = {
                 });
             }
             
+            // 한국 시간으로 변환하여 저장
+            const kstTime = new Date(parsedTime.getTime() + (9 * 60 * 60 * 1000));
+            const kstISOString = kstTime.toISOString();
+            
             // 데이터베이스에 리마인더 저장
             await db.createReminder(
                 interaction.user.id,
                 interaction.channel.id,
                 message,
-                parsedTime.toISOString()
+                kstISOString
             );
             
             // 성공 응답

@@ -125,11 +125,15 @@ async function createRepeatReminder(userId, channelId, message, startTime, inter
             VALUES (?, ?, ?, ?, ?, ?)
         `;
         
+        // 한국 시간으로 변환하여 저장
+        const kstTime = new Date(startTime.getTime() + (9 * 60 * 60 * 1000));
+        const kstISOString = kstTime.toISOString();
+        
         db.db.run(sql, [
             userId,
             channelId,
             message,
-            startTime.toISOString(),
+            kstISOString,
             interval.type,
             interval.value
         ], function(err) {

@@ -3,20 +3,61 @@ const path = require('path');
 
 class Database {
     constructor() {
-        this.dbPath = process.env.DATABASE_PATH || './data/reminders.db';
+        // Railway Volume 또는 환경변수로 데이터베이스 경로 설정
+        this.dbPath = process.env.DATABASE_PATH || '/app/data/reminders.db';
         this.db = null;
+        
+        // 데이터 디렉토리가 없으면 생성
+        const fs = require('fs');
+        const path = require('path');
+        const dataDir = path.dirname(this.dbPath);
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+            console.log(`데이터 디렉토리 생성됨: ${dataDir}`);
+        }
     }
 
     // 데이터베이스 초기화
     async init() {
         return new Promise((resolve, reject) => {
+            console.log(`데이터베이스 연결 시도: ${this.dbPath}`);
+            
             this.db = new sqlite3.Database(this.dbPath, (err) => {
                 if (err) {
                     console.error('데이터베이스 연결 실패:', err.message);
                     reject(err);
                 } else {
-                    console.log('SQLite 데이터베이스에 연결되었습니다.');
-                    this.createTables().then(resolve).catch(reject);
+                    console.log(`SQLite 데이터베이스 연결 성공: ${this.dbPath}`);
+                    
+                    // 기존 데이터 확인
+                    this.checkExistingData().then(() => {
+                        this.createTables().then(resolve).catch(reject);
+                    }).catch(reject);
+                }
+            });
+        });
+    }
+    
+    // 기존 데이터 확인
+    async checkExistingData() {
+        return new Promise((resolve, reject) => {
+            this.db.get("SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name='reminders'", (err, row) => {
+                if (err) {
+                    console.log('테이블 확인 중 오류 (정상 - 첫 실행일 수 있음)');
+                    resolve();
+                } else {
+                    if (row && row.count > 0) {
+                        // 기존 리마인더 개수 확인
+                        this.db.get("SELECT COUNT(*) as count FROM reminders", (err, dataRow) => {
+                            if (!err && dataRow) {
+                                console.log(`기존 리마인더 데이터 발견: ${dataRow.count}개`);
+                            }
+                            resolve();
+                        });
+                    } else {
+                        console.log('새로운 데이터베이스 파일 생성');
+                        resolve();
+                    }
                 }
             });
         });
@@ -121,18 +162,29 @@ class Database {
     // 실행 대기 중인 리마인더 조회
     async getPendingReminders() {
         return new Promise((resolve, reject) => {
-            const now = new Date().toISOString();
+            // 현재 한국 시간을 ISO 문자열로 변환
+            const now = new Date();
+            const kstNow = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC + 9시간
+            const kstISOString = kstNow.toISOString();
+            
+            console.log(`리마인더 확인 중... 현재 한국 시간: ${kstISOString}`);
             const sql = `
                 SELECT * FROM reminders 
                 WHERE remind_time <= ? 
                 ORDER BY remind_time ASC
             `;
 
-            this.db.all(sql, [now], (err, rows) => {
+            this.db.all(sql, [kstISOString], (err, rows) => {
                 if (err) {
                     console.error('대기 중인 리마인더 조회 실패:', err.message);
                     reject(err);
                 } else {
+                    console.log(`찾은 리마인더: ${rows.length}개`);
+                    if (rows.length > 0) {
+                        rows.forEach(row => {
+                            console.log(`- ID: ${row.id}, 시간: ${row.remind_time}, 메시지: ${row.message}`);
+                        });
+                    }
                     resolve(rows);
                 }
             });

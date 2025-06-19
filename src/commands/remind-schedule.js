@@ -284,12 +284,16 @@ async function createScheduledReminder(userId, channelId, message, nextTime, sch
             VALUES (?, ?, ?, ?, ?, ?)
         `;
         
+        // 한국 시간으로 변환하여 저장
+        const kstTime = new Date(nextTime.getTime() + (9 * 60 * 60 * 1000));
+        const kstISOString = kstTime.toISOString();
+        
         // schedule 객체를 JSON 문자열로 저장
         db.db.run(sql, [
             userId,
             channelId,
             message,
-            nextTime.toISOString(),
+            kstISOString,
             'scheduled',
             JSON.stringify(schedule)
         ], function(err) {

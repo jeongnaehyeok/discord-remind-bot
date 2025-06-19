@@ -26,8 +26,11 @@ module.exports = {
                 .setTimestamp();
             
             const fields = reminders.map((reminder, index) => {
+                // DB에서 가져온 시간은 이미 KST로 저장되어 있으므로 그대로 파싱
                 const remindTime = new Date(reminder.remind_time);
-                const formattedTime = formatTime(remindTime);
+                // KST 시간이므로 9시간을 빼서 로컬 시간으로 변환
+                const localTime = new Date(remindTime.getTime() - (9 * 60 * 60 * 1000));
+                const formattedTime = formatTime(localTime);
                 
                 let value = `⏰ ${formattedTime}\n🆔 ID: ${reminder.id}`;
                 
