@@ -36,45 +36,55 @@ describe('timeParser', () => {
         });
         
         describe('절대적 시간 파싱', () => {
-            test('내일 오전 9시', () => {
-                const result = parseTime('내일 오전 9시');
+            test('내일 9시', () => {
+                const result = parseTime('내일 9시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getDate()).toBe(17); // 다음 날
                 expect(result.getHours()).toBe(9);
                 expect(result.getMinutes()).toBe(0);
             });
             
-            test('내일 오후 2시', () => {
-                const result = parseTime('내일 오후 2시');
+            test('내일 14시', () => {
+                const result = parseTime('내일 14시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getDate()).toBe(17);
-                expect(result.getHours()).toBe(14); // 오후 2시 = 14시
+                expect(result.getHours()).toBe(14);
             });
             
-            test('오늘 오후 10시 (미래)', () => {
-                const result = parseTime('오늘 오후 10시');
+            test('오늘 22시 (미래)', () => {
+                const result = parseTime('오늘 22시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getDate()).toBe(16); // 오늘
                 expect(result.getHours()).toBe(22);
             });
             
-            test('오늘 오전 10시 (과거, 내일로 설정)', () => {
-                const result = parseTime('오늘 오전 10시');
+            test('오늘 10시 (과거, 내일로 설정)', () => {
+                const result = parseTime('오늘 10시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getDate()).toBe(17); // 내일로 설정
                 expect(result.getHours()).toBe(10);
             });
             
-            test('오전 12시 (자정)', () => {
-                const result = parseTime('오전 12시');
+            test('0시 (자정)', () => {
+                const result = parseTime('0시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getHours()).toBe(0);
             });
             
-            test('오후 12시 (정오)', () => {
-                const result = parseTime('오후 12시');
+            test('12시 (정오)', () => {
+                const result = parseTime('12시');
                 expect(result).toBeInstanceOf(Date);
                 expect(result.getHours()).toBe(12);
+            });
+            
+            test('24시 이상 (에러)', () => {
+                const result = parseTime('24시');
+                expect(result).toBeNull();
+            });
+            
+            test('내일 25시 (에러)', () => {
+                const result = parseTime('내일 25시');
+                expect(result).toBeNull();
             });
         });
         

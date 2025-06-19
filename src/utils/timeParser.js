@@ -10,7 +10,7 @@ function parseTime(timeString) {
     // 절대적 시간 패턴
     const tomorrowMatch = input.match(/내일/);
     const todayMatch = input.match(/오늘/);
-    const ampmMatch = input.match(/(오전|오후)\s*(\d+)시/);
+    const hourMatch = input.match(/(\d+)시/);
     
     let targetTime = new Date(now);
     
@@ -38,23 +38,12 @@ function parseTime(timeString) {
         targetTime.setDate(now.getDate() + 1);
         
         // 내일 + 시간 조합 처리
-        if (ampmMatch) {
-            const period = ampmMatch[1];
-            let hour = parseInt(ampmMatch[2]);
+        if (hourMatch) {
+            let hour = parseInt(hourMatch[1]);
             
-            // 24시간 형식 입력 (예: 오후 20시) 처리
-            if (hour > 12) {
-                // 이미 24시간 형식이므로 오전/오후 무시
-                if (hour >= 24) {
-                    hour = hour % 24; // 24시 이상은 다음날로 처리
-                }
-            } else {
-                // 12시간 형식 처리
-                if (period === '오후' && hour !== 12) {
-                    hour += 12;
-                } else if (period === '오전' && hour === 12) {
-                    hour = 0;
-                }
+            // 24시간 형식 검증
+            if (hour >= 24) {
+                return null; // 잘못된 시간 형식
             }
             
             targetTime.setHours(hour, 0, 0, 0);
@@ -65,24 +54,13 @@ function parseTime(timeString) {
         return targetTime;
     }
     
-    if (todayMatch || ampmMatch) {
-        if (ampmMatch) {
-            const period = ampmMatch[1];
-            let hour = parseInt(ampmMatch[2]);
+    if (todayMatch || hourMatch) {
+        if (hourMatch) {
+            let hour = parseInt(hourMatch[1]);
             
-            // 24시간 형식 입력 (예: 오후 20시) 처리
-            if (hour > 12) {
-                // 이미 24시간 형식이므로 오전/오후 무시
-                if (hour >= 24) {
-                    hour = hour % 24; // 24시 이상은 다음날로 처리
-                }
-            } else {
-                // 12시간 형식 처리
-                if (period === '오후' && hour !== 12) {
-                    hour += 12;
-                } else if (period === '오전' && hour === 12) {
-                    hour = 0;
-                }
+            // 24시간 형식 검증
+            if (hour >= 24) {
+                return null; // 잘못된 시간 형식
             }
             
             targetTime.setHours(hour, 0, 0, 0);
