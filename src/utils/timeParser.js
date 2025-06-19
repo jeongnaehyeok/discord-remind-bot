@@ -149,14 +149,14 @@ function isValidTime(parsedTime) {
 }
 
 function formatTime(date) {
-    // 한국 시간대로 변환
-    const koreaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    // UTC 시간을 한국 시간(UTC+9)으로 변환
+    const koreaTime = new Date(date.getTime() + (9 * 60 * 60 * 1000));
     
-    const year = koreaDate.getFullYear();
-    const month = koreaDate.getMonth() + 1;
-    const day = koreaDate.getDate();
-    const hour = koreaDate.getHours();
-    const minute = koreaDate.getMinutes();
+    const year = koreaTime.getUTCFullYear();
+    const month = koreaTime.getUTCMonth() + 1;
+    const day = koreaTime.getUTCDate();
+    const hour = koreaTime.getUTCHours();
+    const minute = koreaTime.getUTCMinutes();
     
     // 월 이름 배열
     const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
