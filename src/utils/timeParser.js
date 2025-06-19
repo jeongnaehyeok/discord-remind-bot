@@ -149,16 +149,20 @@ function isValidTime(parsedTime) {
 }
 
 function formatTime(date) {
-    const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Seoul'
-    };
+    // 한국 시간대로 변환
+    const koreaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
     
-    return date.toLocaleDateString('ko-KR', options);
+    const year = koreaDate.getFullYear();
+    const month = koreaDate.getMonth() + 1;
+    const day = koreaDate.getDate();
+    const hour = koreaDate.getHours();
+    const minute = koreaDate.getMinutes();
+    
+    // 월 이름 배열
+    const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                       '7월', '8월', '9월', '10월', '11월', '12월'];
+    
+    return `${year}년 ${monthNames[month - 1]} ${day}일 ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 }
 
 module.exports = {

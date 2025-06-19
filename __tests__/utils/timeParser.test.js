@@ -185,25 +185,25 @@ describe('timeParser', () => {
         test('일반적인 날짜 포맷팅', () => {
             const testDate = new Date('2025-06-16T15:30:00+09:00');
             const result = formatTime(testDate);
-            expect(result).toBe('2025년 6월 16일 오후 03:30');
+            expect(result).toBe('2025년 6월 16일 15:30');
         });
         
         test('오전 시간 포맷팅', () => {
             const testDate = new Date('2025-12-25T09:15:00+09:00');
             const result = formatTime(testDate);
-            expect(result).toBe('2025년 12월 25일 오전 09:15');
+            expect(result).toBe('2025년 12월 25일 09:15');
         });
         
         test('자정 포맷팅', () => {
             const testDate = new Date('2025-01-01T00:00:00+09:00');
             const result = formatTime(testDate);
-            expect(result).toBe('2025년 1월 1일 오전 12:00');
+            expect(result).toBe('2025년 1월 1일 00:00');
         });
         
         test('정오 포맷팅', () => {
             const testDate = new Date('2025-06-16T12:00:00+09:00');
             const result = formatTime(testDate);
-            expect(result).toBe('2025년 6월 16일 오후 12:00');
+            expect(result).toBe('2025년 6월 16일 12:00');
         });
     });
 });
