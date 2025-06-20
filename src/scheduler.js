@@ -142,10 +142,9 @@ async function scheduleNextRepeat(reminder) {
         const currentTime = new Date(reminder.remind_time);
         const nextTime = calculateNextTime(currentTime, reminder.repeat_type, reminder.repeat_interval);
         
-        // 한국 시간으로 변환하여 다음 실행 시간으로 업데이트
-        const kstNextTime = new Date(nextTime.getTime() + (9 * 60 * 60 * 1000));
+        // UTC로 다음 실행 시간으로 업데이트 (이미 UTC임)
         const sql = `UPDATE reminders SET remind_time = ? WHERE id = ?`;
-        db.db.run(sql, [kstNextTime.toISOString(), reminder.id], (err) => {
+        db.db.run(sql, [nextTime.toISOString(), reminder.id], (err) => {
             if (err) {
                 console.error('반복 리마인더 업데이트 실패:', err.message);
             } else {

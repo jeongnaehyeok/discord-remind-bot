@@ -162,19 +162,18 @@ class Database {
     // 실행 대기 중인 리마인더 조회
     async getPendingReminders() {
         return new Promise((resolve, reject) => {
-            // 현재 한국 시간을 ISO 문자열로 변환
+            // 현재 UTC 시간으로 비교 (DB에 UTC로 저장되어 있음)
             const now = new Date();
-            const kstNow = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC + 9시간
-            const kstISOString = kstNow.toISOString();
+            const utcISOString = now.toISOString();
             
-            console.log(`리마인더 확인 중... 현재 한국 시간: ${kstISOString}`);
+            console.log(`리마인더 확인 중... 현재 UTC 시간: ${utcISOString}`);
             const sql = `
                 SELECT * FROM reminders 
                 WHERE remind_time <= ? 
                 ORDER BY remind_time ASC
             `;
 
-            this.db.all(sql, [kstISOString], (err, rows) => {
+            this.db.all(sql, [utcISOString], (err, rows) => {
                 if (err) {
                     console.error('대기 중인 리마인더 조회 실패:', err.message);
                     reject(err);
@@ -182,7 +181,7 @@ class Database {
                     console.log(`찾은 리마인더: ${rows.length}개`);
                     if (rows.length > 0) {
                         rows.forEach(row => {
-                            console.log(`- ID: ${row.id}, 시간: ${row.remind_time}, 메시지: ${row.message}`);
+                            console.log(`- ID: ${row.id}, UTC 시간: ${row.remind_time}, 메시지: ${row.message}`);
                         });
                     }
                     resolve(rows);
