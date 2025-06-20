@@ -110,6 +110,6 @@
 
 ---
 
-🤖 **봇 초대하기**: [Discord 서버에 추가](여기에_봇_초대_링크)
+🤖 **봇 초대하기**: [Discord 서버에 추가](https://discord.com/oauth2/authorize?client_id=1383078315673260133&permissions=2147567616&integration_type=0&scope=bot+applications.commands)
 
 💡 **문의 및 건의**: GitHub Issues로 언제든 연락주세요!
